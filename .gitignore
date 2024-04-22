@@ -26,3 +26,4 @@
 /frontend/.idea
 /frontend/.vscode
 /frontend/dist/*
+/frontend/bun.lockb
