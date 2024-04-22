@@ -8,7 +8,7 @@ services:
     volumes:
       - ./frontend:/usr/src/frontend
       - /usr/src/frontend/node_modules
-    command: npm run serve
+    command: bun run serve
 
   backend:
     build: ./backend
