@@ -5,9 +5,10 @@
   "bun": {
     "runtime": "bun"
   },
+  "type": "module",
   "scripts": {
     "serve": "bun vite --port 4200 --host 0.0.0.0 dist",
-    "build": "bun vite build public"
+    "build": "bun vite build"
   },
   "main": "src/main.js",
   "dependencies": {
@@ -15,7 +16,7 @@
     "axios": "",
     "core-js": "",
     "crypto-js": "",
-    "vite": "",
+    "vite": "^5.2.10",
     "vue": "",
     "vue-router": "",
     "vuetify": ""
