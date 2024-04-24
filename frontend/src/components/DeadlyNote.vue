@@ -96,7 +96,7 @@ export default {
     },
     send(e) {
       e.preventDefault();
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.value.validate()) {
         this.noteLabel = '';
 
         const payload = {

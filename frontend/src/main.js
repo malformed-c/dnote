@@ -1,18 +1,20 @@
 import 'core-js/stable';
 import 'vuetify/dist/vuetify.min.css';
 import { createApp } from 'vue';
-import Vuetify from 'vuetify';
+import { createVuetify } from 'vuetify';
 import { createRouter, createWebHistory } from 'vue-router';
+import CryptoJS from 'crypto-js';
+import axios from 'axios';
 import App from './App.vue';
 import DeadlyNote from './components/DeadlyNote.vue';
 
-window.CryptoJS = require('crypto-js');
+window.CryptoJS = CryptoJS;
 
-window.axios = require('axios');
+window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-const vuetify = new Vuetify({
+const vuetify = createVuetify({
   icons: {
     iconfont: 'md',
   },
