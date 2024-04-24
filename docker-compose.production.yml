@@ -1,7 +1,6 @@
-version: '3.2'
 services:
   frontend:
-    command: bun run build
+    command: run build
     volumes:
       - type: volume
         source: frontend

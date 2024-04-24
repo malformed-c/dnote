@@ -1,10 +1,10 @@
-FROM node:8-alpine
+FROM node:21-alpine
 
 ENV DIR=/usr/src/api
 
 COPY package.json package-lock.json ./
 
-RUN apk add python make
+RUN apk add python3 make
 
 RUN npm i && \
     mkdir -p $DIR && \

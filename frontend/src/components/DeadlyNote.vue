@@ -6,9 +6,7 @@
           <v-flex xs14 sm8 md4>
             <v-card class="elevation-12">
               <v-toolbar dark color="primary">
-                <v-toolbar-title
-                  >Deadly Note - Share notes securely</v-toolbar-title
-                >
+                <v-toolbar-title>Deadly Note - Share notes securely</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-card-text>
@@ -47,11 +45,15 @@
 </template>
 
 <script>
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
+
 const api = '/notes';
 let secret = '';
 const urlHash = '#';
 
 export default {
+  name: 'DeadlyNote',
   data() {
     return {
       message: '',
@@ -71,10 +73,10 @@ export default {
     };
   },
   mounted() {
-    if (typeof this.$route.params.id != 'undefined') {
+    if (typeof this.$route.params.id !== 'undefined') {
       this.noteLabel = '';
       const params = this.$route.params.id.split(urlHash);
-      secret = location.hash.replace('#', '');
+      secret = window.location.hash.replace('#', '');
       axios
         .get(`${api}/${params[0]}`)
         .then((response) => {
@@ -82,7 +84,7 @@ export default {
           this.completed = true;
           this.$router.push('/');
         })
-        .catch((response) => {
+        .catch(() => {
           this.showAlertNotFound();
           this.$router.push('/');
         });
@@ -107,7 +109,7 @@ export default {
           .then((response) => {
             this.completed = true;
             this.clearForm();
-            this.message = `${location.href}${response.data.id}${urlHash}${secret}`;
+            this.message = `${window.location.href}${response.data.id}${urlHash}${secret}`;
           })
           .catch((response) => {
             this.showAlert = true;
@@ -118,19 +120,18 @@ export default {
     },
     encrypt() {
       secret = CryptoJS.MD5(
-        CryptoJS.enc.Base64.stringify(CryptoJS.lib.WordArray.random(32))
+        CryptoJS.enc.Base64.stringify(CryptoJS.lib.WordArray.random(32)),
       ).toString();
       return CryptoJS.AES.encrypt(this.message, secret).toString();
     },
     decrypt(encrypted) {
       return CryptoJS.AES.decrypt(encrypted, secret).toString(
-        CryptoJS.enc.Utf8
+        CryptoJS.enc.Utf8,
       );
     },
     showAlertNotFound() {
       this.showAlert = true;
-      this.alertContent =
-        'Oops, seems that this note never existed or it was already viewed.';
+      this.alertContent = 'Oops, seems that this note never existed or it was already viewed.';
       this.alertType = 'error';
     },
     copy() {

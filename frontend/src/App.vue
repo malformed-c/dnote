@@ -7,27 +7,27 @@
 </template>
 
 <script>
-import DeadlyNote from './components/DeadlyNote';
+import DeadlyNote from './components/DeadlyNote.vue';
 
 export default {
   name: 'App',
   components: {
-    DeadlyNote
+    DeadlyNote,
   },
-  data () {
+  data() {
     return {
       clipped: false,
       drawer: true,
       fixed: false,
       items: [{
         icon: 'bubble_chart',
-        title: 'Inspire'
+        title: 'Inspire',
       }],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Deadly Note'
-    }
-  }
+      title: 'Deadly Note',
+    };
+  },
 };
 </script>

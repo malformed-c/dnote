@@ -2,7 +2,7 @@
  * Module Dependencies
  */
 const restify = require('restify');
-const restifyPlugins = require('restify-plugins');
+const restifyPlugins = require('restify').plugins;
 const config = require('./config');
 
 /**
