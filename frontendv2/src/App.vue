@@ -1,14 +1,9 @@
 <script setup>
 import { RouterView } from 'vue-router'
-import DeadlyNote from './components/DeadlyNote.vue';
 </script>
 
 <template>
-  <header>
-    <div class="wrapper">
-      <DeadlyNote/>
-    </div>
-  </header>
+  <RouterView />
 </template>
 
 <style scoped>

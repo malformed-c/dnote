@@ -1,43 +1,44 @@
 <script setup>
+import axios from 'axios';
+import CryptoJS from 'crypto-js';
 </script>
 
 <template>
+  <header class="header">
+    <h1 color="blue">Deadly Note</h1>
+  </header>
+
   <div class="main">
-    <h1 class="blue">Deadly Note</h1>
+    <textarea
+    v-model="message"
+    rows="5"
+    id="messageContent"
+    required
+    placeholder="Type here"
+    >
+  </textarea>
+  <div class="buttons">
+    <button color="green">Generate</button>
+    <button color="blue">Copy and Erase</button>
+  </div>
+  </div>
+  <div class="debug">
+    Current path: {{ $route.path }}
+    Query: {{ $route.query }}
+    Params: {{ $route.params }}
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import CryptoJS from 'crypto-js';
-
 const api = '/notes';
 let secret = '';
 const urlHash = '#';
 
 export default {
   name: 'DeadlyNote',
-  data() {
-    return {
-      message: '',
-      form: false,
-      email: '',
-      numberOfViews: '1',
-      noteLabel: 'Type here',
-      showOptions: false,
-      validOptions: false,
-      valid: false,
-      completed: false,
-      errors: [],
-      urlEncoded: '',
-      showAlert: false,
-      alertType: 'info',
-      alertContent: '',
-    };
-  },
+  
   mounted() {
     if (typeof this.$route.params.id !== 'undefined') {
-      this.noteLabel = '';
       const params = this.$route.params.id.split(urlHash);
       secret = window.location.hash.replace('#', '');
       axios
@@ -111,21 +112,34 @@ export default {
 </script>
 
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  padding: 5px;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.main {
+  display: grid;
+  place-items: center;
+  gap: 20px;
 }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
+.main textarea {
+  width: 80%;
+  height: fit-content;
+  padding: 10px;
+  border: 3px solid blue;
+  border-radius: 5px;
 }
 
-a {
-  color: #42b983;
+.buttons {
+  display: flex;
+  gap: 10vh;
+  height: 35px;
+  width: auto;
 }
+
 </style>
