@@ -5,15 +5,15 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/:id',
+      name: 'reader',
+      component : DeadlyNote,
+    },
+    {
       path: '/',
       name: 'home',
       component: DeadlyNote,
     },
-    {
-      path: '/:id',
-      name: 'reader',
-      component : DeadlyNote,
-    }
   ]
 })
 

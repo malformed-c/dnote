@@ -1,6 +1,111 @@
 <script setup>
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useClipboard } from '@vueuse/core'
+
+const { copy, copied } = useClipboard()
+
+const completed = defineModel('completed')
+
+const showAlert = defineModel('showAlert')
+const alertContent = defineModel('alertContent')
+
+const route = useRoute();
+
+const message = defineModel('message');
+
+const switchCase = defineModel('switchCase');
+switchCase.value = 'setup'
+
+console.log('setup')
+
+onMounted(() =>
+{
+  console.log('mounted')
+  console.log(route.path, route.name)
+
+  if (route.name === 'home')
+  {
+    console.log('home branch')
+    switchCase.value = 'home';
+
+  } else if (route.name === 'reader') {
+    console.log('reader branch')
+    const params = route.params.id.split('#');
+      const secret = params[1];
+
+      axios
+        .get(`notes/${params[0]}`)
+        .then((resp) => {
+          message.value = decrypt(resp.data, secret);
+          completed.value = true;
+          this.$router.push('/');
+        })
+        .catch(() => {
+          showAlertNotFound();
+          this.$router.push('/');
+        });
+  }
+})
+
+function showAlertNotFound() {
+  console.error('not implemented')
+}
+
+function send() {
+  // TODO add validation
+  if (message.value) {
+    const {encrypted, secret} = encrypt(message.value)
+
+    const payload = {
+      note: encrypted,
+    };
+
+    message.value = encrypted;
+
+    axios
+    .post('/notes', payload)
+    .then((resp) => {
+      completed.value = true;
+      message.value = `${window.location.href}${resp.data.id}#${secret}`
+    })
+    .catch((resp) => {
+      showAlert.value = true;
+      alertContent.value = resp.message;
+    })
+  }
+}
+
+function encrypt(data) {
+  const MD5 = CryptoJS.MD5;
+  const Base64 = CryptoJS.enc.Base64;
+  const WordArray = CryptoJS.lib.WordArray;
+  const AES = CryptoJS.AES;
+
+  const secret = MD5(
+    Base64.stringify(
+      WordArray.random(32)))
+  .toString();
+
+  const encrypted = AES.encrypt(data, secret).toString();
+
+  return {
+    encrypted: encrypted,
+    secret: secret
+  };
+}
+
+function decrypt(data, secret) {
+  const AES = CryptoJS.AES;
+  const Utf8 = CryptoJS.enc.Utf8;
+
+  const decrypted = AES.decrypt(data, secret).toString(Utf8);
+
+  return decrypted;
+}
+
 </script>
 
 <template>
@@ -16,100 +121,33 @@ import CryptoJS from 'crypto-js';
     required
     placeholder="Type here"
     >
+
   </textarea>
-  <div class="buttons">
-    <button color="green">Generate</button>
-    <button color="blue">Copy and Erase</button>
+    <div class="buttons">
+
+      <button @click="send()"
+      :style="{ empty: !message }">
+        Generate
+      </button>
+
+      <button @click="copy(message)"
+      :class="{ copied: copied }">
+        <span v-if="!copied">Copy</span>
+        <span v-else>Copied</span>
+      </button>
+
+    </div>
   </div>
-  </div>
+
   <div class="debug">
     Current path: {{ $route.path }}
     Query: {{ $route.query }}
     Params: {{ $route.params }}
+    Route: {{ $route.name }}
+    Case: {{ switchCase }}
   </div>
+
 </template>
-
-<script>
-const api = '/notes';
-let secret = '';
-const urlHash = '#';
-
-export default {
-  name: 'DeadlyNote',
-  
-  mounted() {
-    if (typeof this.$route.params.id !== 'undefined') {
-      const params = this.$route.params.id.split(urlHash);
-      secret = window.location.hash.replace('#', '');
-      axios
-        .get(`${api}/${params[0]}`)
-        .then((response) => {
-          this.message = this.decrypt(response.data);
-          this.completed = true;
-          this.$router.push('/');
-        })
-        .catch(() => {
-          this.showAlertNotFound();
-          this.$router.push('/');
-        });
-    }
-  },
-  methods: {
-    clearForm() {
-      this.$refs.form.reset();
-    },
-    send(e) {
-      e.preventDefault();
-      if (this.$refs.form.value.validate()) {
-        this.noteLabel = '';
-
-        const payload = {
-          note: this.encrypt(this.message),
-          numberOfViews: parseInt(this.numberOfViews, 10),
-          email: this.email,
-        };
-        axios
-          .post(api, payload)
-          .then((response) => {
-            this.completed = true;
-            this.clearForm();
-            this.message = `${window.location.href}${response.data.id}${urlHash}${secret}`;
-          })
-          .catch((response) => {
-            this.showAlert = true;
-            this.alertContent = response.message;
-            this.alertType = 'error';
-          });
-      }
-    },
-    encrypt() {
-      secret = CryptoJS.MD5(
-        CryptoJS.enc.Base64.stringify(CryptoJS.lib.WordArray.random(32)),
-      ).toString();
-      return CryptoJS.AES.encrypt(this.message, secret).toString();
-    },
-    decrypt(encrypted) {
-      return CryptoJS.AES.decrypt(encrypted, secret).toString(
-        CryptoJS.enc.Utf8,
-      );
-    },
-    showAlertNotFound() {
-      this.showAlert = true;
-      this.alertContent = 'Oops, seems that this note never existed or it was already viewed.';
-      this.alertType = 'error';
-    },
-    copy() {
-      const testingCodeToCopy = document.querySelector('#messageContent');
-      testingCodeToCopy.select();
-      document.execCommand('copy');
-      window.getSelection().removeAllRanges();
-      this.noteLabel = 'Type here';
-      this.clearForm();
-      this.completed = false;
-    },
-  },
-};
-</script>
 
 <style scoped>
 .header {
@@ -119,15 +157,22 @@ export default {
   width: 100%;
   display: flex;
   padding: 5px;
+  color: lightblue;
+  z-index: 10;
 }
 
 .main {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   place-items: center;
+  justify-content: center;
+  align-items: center;
   gap: 20px;
+  margin-top: 60px;
 }
 
 .main textarea {
+  min-width: 50vw;
   width: 80%;
   height: fit-content;
   padding: 10px;
@@ -140,6 +185,22 @@ export default {
   gap: 10vh;
   height: 35px;
   width: auto;
+}
+
+.buttons button {
+  background-color: yellow;
+}
+
+.empty {
+  background-color: red !important;
+}
+
+.copied {
+  background-color: green !important;
+}
+
+.debug {
+  display: none;
 }
 
 </style>
