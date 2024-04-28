@@ -33,9 +33,10 @@ onMounted(() =>
 
   } else if (route.name === 'reader') {
     console.log('reader branch')
-    const params = route.params.id.split('#');
-    const id = params[0];
-    const secret = params[1];
+    const id = route.params.id
+    const secret = route.hash.replace('#', '')
+
+    console.log(`id ${id} secret ${secret}`)
 
     axios
     .get(`api/${id}`)
@@ -44,7 +45,8 @@ onMounted(() =>
       showWarning('Here is message, only for you', 'green', false)
       router.push('/')
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error(error)
       showWarning('Request failed');
       router.push('/')
     });
@@ -82,8 +84,6 @@ function send() {
     const payload = {
       note: encrypted,
     };
-
-    message.value = `${window.location.href}test#${secret}`;
 
     axios
     .post('/api', payload)
