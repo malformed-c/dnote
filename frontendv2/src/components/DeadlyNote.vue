@@ -260,7 +260,7 @@ function copyHandler() {
 }
 
 .debug {
-  display: flex;
+  display: none;
 }
 
 </style>
