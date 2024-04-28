@@ -1,30 +1,30 @@
 <script setup>
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
-import { onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useClipboard } from '@vueuse/core'
 
-const { copy, copied } = useClipboard()
-
-const completed = defineModel('completed')
-
-const showAlert = defineModel('showAlert')
-const alertContent = defineModel('alertContent')
+const { copy, copied } = useClipboard();
 
 const route = useRoute();
+const router = useRouter();
 
 const message = defineModel('message');
 
-const switchCase = defineModel('switchCase');
-switchCase.value = 'setup'
+const warning = ref('');
+const warningStyle = ref({});
+const warningElement = ref();
 
-console.log('setup')
+const switchCase = defineModel('switchCase');
+switchCase.value = 'setup';
+
+console.log('setup');
 
 onMounted(() =>
 {
-  console.log('mounted')
-  console.log(route.path, route.name)
+  console.log('mounted');
+  console.log(route.path, route.name);
 
   if (route.name === 'home')
   {
@@ -34,24 +34,44 @@ onMounted(() =>
   } else if (route.name === 'reader') {
     console.log('reader branch')
     const params = route.params.id.split('#');
-      const secret = params[1];
+    const id = params[0];
+    const secret = params[1];
 
-      axios
-        .get(`notes/${params[0]}`)
-        .then((resp) => {
-          message.value = decrypt(resp.data, secret);
-          completed.value = true;
-          this.$router.push('/');
-        })
-        .catch(() => {
-          showAlertNotFound();
-          this.$router.push('/');
-        });
+    axios
+    .get(`api/${id}`)
+    .then((resp) => {
+      message.value = decrypt(resp.data, secret);
+      showWarning('Here is message, only for you', 'green', false)
+      router.push('/')
+    })
+    .catch(() => {
+      showWarning('Request failed');
+      router.push('/')
+    });
   }
 })
 
-function showAlertNotFound() {
-  console.error('not implemented')
+function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true) {
+  warningStyle.value = {
+      color: color,
+      fontSize: 'large',
+      fontWeight: 'bold',
+    }
+
+  if (shake) {
+    warningElement.value.classList.add('shake')
+  }
+
+  warning.value = text;
+
+  setTimeout(() => {
+    if (shake) {
+      warningElement.value.classList.remove('shake')
+    }
+
+    warning.value = '';
+  },
+  3000)
 }
 
 function send() {
@@ -63,18 +83,19 @@ function send() {
       note: encrypted,
     };
 
-    message.value = encrypted;
+    message.value = `${window.location.href}test#${secret}`;
 
     axios
-    .post('/notes', payload)
+    .post('/api', payload)
     .then((resp) => {
-      completed.value = true;
       message.value = `${window.location.href}${resp.data.id}#${secret}`
+      showWarning('Completed', 'green', false)
     })
-    .catch((resp) => {
-      showAlert.value = true;
-      alertContent.value = resp.message;
+    .catch((err) => {
+      showWarning(err)
     })
+  } else {
+    showWarning();
   }
 }
 
@@ -106,12 +127,27 @@ function decrypt(data, secret) {
   return decrypted;
 }
 
+function copyHandler() {  
+  if (message.value) {
+    copy(message.value);
+    showWarning('Now go!', 'LightGreen', false)
+  } else {
+    showWarning();
+  }
+}
+
 </script>
 
 <template>
   <header class="header">
     <h1 color="blue">Deadly Note</h1>
   </header>
+
+  <div class="warning-container">
+    <span ref="warningElement" :style="warningStyle">
+      {{ warning }}
+    </span>
+  </div>
 
   <div class="main">
     <textarea
@@ -130,7 +166,7 @@ function decrypt(data, secret) {
         Generate
       </button>
 
-      <button @click="copy(message)"
+      <button @click="copyHandler()"
       :class="{ copied: copied }">
         <span v-if="!copied">Copy</span>
         <span v-else>Copied</span>
@@ -150,8 +186,27 @@ function decrypt(data, secret) {
 </template>
 
 <style scoped>
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
+}
+
+.shake {
+ animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+ transform: translate3d(0, 0, 0);
+}
+
 .header {
-  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -161,14 +216,19 @@ function decrypt(data, secret) {
   z-index: 10;
 }
 
+.warning-container {
+  display: flex;
+  min-height: 60px;
+  justify-content: center;
+  align-items: center;
+}
+
 .main {
   display: flex;
   flex-direction: column;
-  place-items: center;
   justify-content: center;
   align-items: center;
   gap: 20px;
-  margin-top: 60px;
 }
 
 .main textarea {
@@ -192,15 +252,15 @@ function decrypt(data, secret) {
 }
 
 .empty {
-  background-color: red !important;
+  background-color: LightCoral !important;
 }
 
 .copied {
-  background-color: green !important;
+  background-color: LightGreen !important;
 }
 
 .debug {
-  display: none;
+  display: flex;
 }
 
 </style>
