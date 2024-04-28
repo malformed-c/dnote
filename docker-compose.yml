@@ -1,28 +1,28 @@
 services:
   frontend:
-    build: ./frontend
+    build: ./frontendv2
     image: deadlynote:frontend
-    ports:
-      - '4200:4200'
     volumes:
-      - ./frontend:/usr/src/frontend
-      - /usr/src/frontend/node_modules
-    command: run serve
+      - /app/node_modules
+      - /app/dist
+    ports:
+      - '4200:80'
+    command: nginx -g "daemon off;"
+    depends_on:
+      - backend
 
   backend:
-    build: ./backend
+    build: ./backendv2
     image: deadlynote:backend
+    volumes:
+      - /app/.venv
+    command: uvicorn main:app --host 0.0.0.0 --port 3000
     depends_on:
     - redis
-    volumes:
-    - ./backend:/usr/src/api
-    - /usr/src/backend/node_modules
-    command: node index.js
 
   redis:
     image: redis:7-alpine
 
 networks:
   default:
-    external: true
-    name: deadlynote_proxy
+    name: deadlynote
