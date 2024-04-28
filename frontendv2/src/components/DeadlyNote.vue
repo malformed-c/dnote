@@ -36,6 +36,16 @@ onMounted(() =>
     const id = route.params.id
     const secret = route.hash.replace('#', '')
 
+    const md5Regex = /^[a-f0-9]{32}$/;
+
+    if (!secret) {
+      showWarning('Where is the key?')
+      return
+    } else if (!md5Regex.test(secret)) {
+      showWarning('Invalid key format. Please ensure it is a valid MD5 hash.');
+      return
+    }
+
     console.log(`id ${id} secret ${secret}`)
 
     axios
