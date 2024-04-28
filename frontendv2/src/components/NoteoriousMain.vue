@@ -16,6 +16,8 @@ const warning = ref('');
 const warningStyle = ref({});
 const warningElement = ref();
 
+const completed = ref(false)
+
 const switchCase = defineModel('switchCase');
 switchCase.value = 'setup';
 
@@ -40,9 +42,11 @@ onMounted(() =>
 
     if (!secret) {
       showWarning('Where is the key?')
+      router.push('/')
       return
     } else if (!md5Regex.test(secret)) {
       showWarning('Invalid key format. Please ensure it is a valid MD5 hash.');
+      router.push('/')
       return
     }
 
@@ -95,15 +99,19 @@ function send() {
       note: encrypted,
     };
 
+    // TODO add progress
+
     axios
     .post('/api', payload)
     .then((resp) => {
       message.value = `${window.location.href}${resp.data.id}#${secret}`
       showWarning('Completed', 'green', false)
+      completed.value = true
     })
     .catch((err) => {
       showWarning(err)
     })
+
   } else {
     showWarning();
   }
@@ -138,9 +146,12 @@ function decrypt(data, secret) {
 }
 
 function copyHandler() {  
-  if (message.value) {
+  if (message.value && completed.value == true) {
     copy(message.value);
     showWarning('Now go!', 'LightGreen', false)
+    completed.value = false
+  } else if (message.value && completed.value == false) {
+    showWarning('Press Generate', 'Yellow', false)
   } else {
     showWarning();
   }
@@ -150,7 +161,9 @@ function copyHandler() {
 
 <template>
   <header class="header">
-    <h1 color="blue">Deadly Note</h1>
+    <router-link to="/">
+      <h1 class="title">Noteorious</h1>
+    </router-link>
   </header>
 
   <div class="warning-container">
@@ -224,6 +237,10 @@ function copyHandler() {
   padding: 5px;
   color: lightblue;
   z-index: 10;
+}
+
+.title {
+  color: deepskyblue;
 }
 
 .warning-container {

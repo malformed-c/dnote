@@ -1,6 +1,4 @@
-# frontendv2
-
-This template should help get you started developing with Vue 3 in Vite.
+# Noteorious Frontend
 
 ## Recommended IDE Setup
 
@@ -10,9 +8,16 @@ This template should help get you started developing with Vue 3 in Vite.
 
 See [Vite Configuration Reference](https://vitejs.dev/config/).
 
+## Developing with Docker
+
+```sh
+docker compose up
+```
+
 ## Project Setup
 
 ```sh
+bun add vite
 bun install
 ```
 

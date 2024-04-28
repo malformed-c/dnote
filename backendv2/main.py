@@ -8,10 +8,10 @@ from pydantic import BaseModel
 
 import redis.asyncio as redis
 
-class DeadlyNote(BaseModel):
+class Noteorious(BaseModel):
     note: str
 
-logger = logging.getLogger('DeadlyNote')
+logger = logging.getLogger('Noteorious')
 logger.setLevel(logging.DEBUG)
 
 stdout_handler = logging.StreamHandler()
@@ -63,7 +63,7 @@ async def serve_id(id: str):
         raise HTTPException(status_code=500)
     
 @app.post("/api")
-async def save_note(body: DeadlyNote):
+async def save_note(body: Noteorious):
     encrypted = body.note
     logger.info(f"Received: {encrypted}")
 

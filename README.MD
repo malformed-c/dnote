@@ -1,5 +1,12 @@
-# Deadly Note
-## Securely share passwords, credentials, and notes.
+# Noteorious
+## Deadly Note Revived
+## Secure Note-Sharing, Passwords, Credentials.
+
+### Features
+
+- **Secure Encryption**: All notes are encrypted using AES256, ensuring that your data is safe from unauthorized access.
+- **Easy Sharing**: Share notes with others through unique, secure links that automatically delete after being accessed.
+- **Privacy-First Design**: Focuses on privacy and security, ensuring that your notes are only accessible to those with the correct decryption password.
 
 ### Introduction
 
@@ -19,7 +26,7 @@ This will start the application in production mode (`NGINX`). You might want to 
 ```
 docker compose up -d
 ```
-- Then access **http://localhost:4200/**
+- Access at **http://localhost:4200/**
 
 Clean the containers
 
@@ -29,16 +36,18 @@ docker compose down
 
 ### Usage
 
-Type your note in the textbox and click `Generate`. The text will be replace **with a link to your note**.
+1. Type your note in the textbox and click `Generate`. The text will be replace **with a link to your note** and click `Copy` to copy it to the clipboard.
 
-URLs are composed of the _unique note identifier_ + _decryption password_.
+2. Share the link with your intended recipient. The URL is composed of the _unique note identifier_ + _decryption password_.
+
+**Important**: Once a note is retrieved, it gets deleted from the database to ensure privacy and security.
+
+
 
 > Example
 ```
 http://localhost:4200/megURjYSfZRoip73AfoG7g#3aa96a0d6be4ded54e810d123cf71757
 ```
-
-## Once a note is retrieved, **it gets deleted** from the database.
 
 ### Tech stack
 

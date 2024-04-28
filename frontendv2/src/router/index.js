@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DeadlyNote from '@/components/DeadlyNote.vue'
+import NoteoriousMain from '@/components/NoteoriousMain.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,12 +7,12 @@ const router = createRouter({
     {
       path: '/:id',
       name: 'reader',
-      component : DeadlyNote,
+      component : NoteoriousMain,
     },
     {
       path: '/',
       name: 'home',
-      component: DeadlyNote,
+      component: NoteoriousMain,
     },
   ]
 })
