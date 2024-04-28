@@ -26,3 +26,39 @@
 /frontend/.idea
 /frontend/.vscode
 /frontend/dist/*
+
+# FRONTENDV2
+# Logs
+/frontendv2/logs
+/frontendv2/*.log
+/frontendv2/npm-debug.log*
+/frontendv2/yarn-debug.log*
+/frontendv2/yarn-error.log*
+/frontendv2/pnpm-debug.log*
+/frontendv2/lerna-debug.log*
+
+/frontendv2/node_modules
+/frontendv2/.DS_Store
+/frontendv2/dist
+/frontendv2/dist-ssr
+/frontendv2/coverage
+/frontendv2/*.local
+
+/frontendv2//cypress/videos/
+/frontendv2//cypress/screenshots/
+
+# Editor directories and files
+/frontendv2/.vscode/*
+/frontendv2/!.vscode/extensions.json
+/frontendv2/.idea
+/frontendv2/*.suo
+/frontendv2/*.ntvs*
+/frontendv2/*.njsproj
+/frontendv2/*.sln
+/frontendv2/*.sw?
+
+/frontendv2/*.tsbuildinfo
+
+#BACKENDV2
+/backendv2/venv
+
