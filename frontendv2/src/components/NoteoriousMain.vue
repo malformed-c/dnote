@@ -23,13 +23,11 @@ switchCase.value = 'setup';
 
 console.log('setup');
 
-onMounted(() =>
-{
+onMounted(() => {
   console.log('mounted');
   console.log(route.path, route.name);
 
-  if (route.name === 'home')
-  {
+  if (route.name === 'home') {
     console.log('home branch')
     switchCase.value = 'home';
 
@@ -53,26 +51,26 @@ onMounted(() =>
     console.log(`id ${id} secret ${secret}`)
 
     axios
-    .get(`api/${id}`)
-    .then((resp) => {
-      message.value = decrypt(resp.data, secret);
-      showWarning('Here is message, only for you', 'green', false)
-      router.push('/')
-    })
-    .catch((error) => {
-      console.error(error)
-      showWarning('Request failed');
-      router.push('/')
-    });
+      .get(`api/${id}`)
+      .then((resp) => {
+        message.value = decrypt(resp.data, secret);
+        showWarning('Here is message, only for you', 'green', false)
+        router.push('/')
+      })
+      .catch((error) => {
+        console.error(error)
+        showWarning('Request failed');
+        router.push('/')
+      });
   }
 })
 
 function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true) {
   warningStyle.value = {
-      color: color,
-      fontSize: 'large',
-      fontWeight: 'bold',
-    }
+    color: color,
+    fontSize: 'large',
+    fontWeight: 'bold',
+  }
 
   if (shake) {
     warningElement.value.classList.add('shake')
@@ -87,13 +85,13 @@ function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true)
 
     warning.value = '';
   },
-  3000)
+    3000)
 }
 
 function send() {
   // TODO add validation
   if (message.value) {
-    const {encrypted, secret} = encrypt(message.value)
+    const { encrypted, secret } = encrypt(message.value)
 
     const payload = {
       note: encrypted,
@@ -102,15 +100,15 @@ function send() {
     // TODO add progress
 
     axios
-    .post('/api', payload)
-    .then((resp) => {
-      message.value = `${window.location.href}${resp.data.id}#${secret}`
-      showWarning('Completed', 'green', false)
-      completed.value = true
-    })
-    .catch((err) => {
-      showWarning(err)
-    })
+      .post('/api', payload)
+      .then((resp) => {
+        message.value = `${window.location.href}${resp.data.id}#${secret}`
+        showWarning('Completed', 'green', false)
+        completed.value = true
+      })
+      .catch((err) => {
+        showWarning(err)
+      })
 
   } else {
     showWarning();
@@ -126,7 +124,7 @@ function encrypt(data) {
   const secret = MD5(
     Base64.stringify(
       WordArray.random(32)))
-  .toString();
+    .toString();
 
   const encrypted = AES.encrypt(data, secret).toString();
 
@@ -145,13 +143,13 @@ function decrypt(data, secret) {
   return decrypted;
 }
 
-function copyHandler() {  
+function copyHandler() {
   if (message.value && completed.value == true) {
     copy(message.value);
     showWarning('Now go!', 'LightGreen', false)
     completed.value = false
   } else if (message.value && completed.value == false) {
-    showWarning('Press Generate', 'Yellow', false)
+    showWarning('Press Generate', 'Brown', false)
   } else {
     showWarning();
   }
@@ -160,37 +158,34 @@ function copyHandler() {
 </script>
 
 <template>
-  <header class="header">
+  <header class="p-6 max-w shadow-md flex items-center space-x-6 bg-[#f5f4f1]">
     <router-link to="/">
-      <h1 class="title">Noteorious</h1>
+      <h1 class="font-semibold text-2xl text-[#71c4ef] hover:text-[#00668c]">Noteorious</h1>
     </router-link>
+    <p class="flex-1 text-slate-300 text-xs hover:text-slate-800">Deadly Note Revived</p>
   </header>
 
-  <div class="warning-container">
+  <div class="warning-container min-h-14 flex items-center justify-center">
     <span ref="warningElement" :style="warningStyle">
       {{ warning }}
     </span>
   </div>
 
-  <div class="main">
-    <textarea
-    v-model="message"
-    rows="5"
-    id="messageContent"
-    required
-    placeholder="Type here"
-    >
+  <div class="flex flex-col justify-center items-center space-y-4">
+    <textarea v-model="message" rows=5 required placeholder="Type here"
+      class="bg-[#f5f4f1] border-4 max-w-82 rounded-md shadow-lg resize-none focus:resize-y w-2/3 border-[#71c4ef] invalid:border-red-300 focus:invalid:border-red-500">
 
   </textarea>
-    <div class="buttons">
+
+    <div class="flex space-x-32 flex-1">
 
       <button @click="send()"
-      :style="{ empty: !message }">
+        class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
         Generate
       </button>
 
       <button @click="copyHandler()"
-      :class="{ copied: copied }">
+        class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
         <span v-if="!copied">Copy</span>
         <span v-else>Copied</span>
       </button>
@@ -198,7 +193,7 @@ function copyHandler() {
     </div>
   </div>
 
-  <div class="debug">
+  <div class="hidden">
     Current path: {{ $route.path }}
     Query: {{ $route.query }}
     Params: {{ $route.params }}
@@ -209,24 +204,32 @@ function copyHandler() {
 </template>
 
 <style scoped>
-
 @keyframes shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
 
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-10px);
   }
 
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(10px);
   }
 }
 
 .shake {
- animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
- transform: translate3d(0, 0, 0);
+  animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+  transform: translate3d(0, 0, 0);
 }
 
 .header {
@@ -237,45 +240,6 @@ function copyHandler() {
   padding: 5px;
   color: lightblue;
   z-index: 10;
-}
-
-.title {
-  color: deepskyblue;
-}
-
-.warning-container {
-  display: flex;
-  min-height: 60px;
-  justify-content: center;
-  align-items: center;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-}
-
-.main textarea {
-  min-width: 50vw;
-  width: 80%;
-  height: fit-content;
-  padding: 10px;
-  border: 3px solid blue;
-  border-radius: 5px;
-}
-
-.buttons {
-  display: flex;
-  gap: 10vh;
-  height: 35px;
-  width: auto;
-}
-
-.buttons button {
-  background-color: yellow;
 }
 
 .empty {
@@ -289,5 +253,4 @@ function copyHandler() {
 .debug {
   display: none;
 }
-
 </style>
