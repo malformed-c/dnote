@@ -6,7 +6,7 @@ services:
       - /app/node_modules
       - /app/dist
     ports:
-      - '4201:80'
+      - '4200:80'
     command: nginx -g "daemon off;"
     depends_on:
       - backend

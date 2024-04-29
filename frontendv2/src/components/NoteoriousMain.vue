@@ -180,7 +180,6 @@ function copyHandler() {
     </span>
   </div>
 
-  <form name="noteForm">
     <div class="bg-hint-of-red-50 text-hint-of-red-50 flex flex-col p-6 justify-center items-center shadow-2xl max-w-sm mx-auto rounded-xl
     dark:bg-zinc-800 dark:text-slate-100 relative">
 
@@ -191,13 +190,13 @@ function copyHandler() {
 
       <span class="mt-12"></span>
 
-      <textarea id="note" name="note" v-model="message" rows=5 required placeholder="Type here" class="bg-hint-of-red-50 mb-4 border-4 border-hint-of-red-100 max-w-82 rounded-md resize-none focus:resize-y w-full
-        dark:bg-zinc-700 dark:border-zinc-700">
+      <textarea v-model="message" rows=5 required placeholder="Type here" class="text-black bg-hint-of-red-50 mb-4 border-4 border-hint-of-red-100 max-w-82 rounded-md resize-none focus:resize-y w-full
+        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-700">
 
       </textarea>
 
       <Transition>
-        <button v-if="!completed" type="submit" @click="send()" class="rounded-xl p-2 shadow-md bg-cornflower-blue-400 hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+        <button v-if="!completed" @click="send()" class="rounded-xl p-2 shadow-md bg-cornflower-blue-400 hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
           text-hint-of-red-50">
           Generate
         </button>
@@ -210,7 +209,6 @@ function copyHandler() {
       </Transition>
 
     </div>
-  </form>
 
   <div class="hidden">
     Current path: {{ $route.path }}
