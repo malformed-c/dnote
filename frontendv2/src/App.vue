@@ -20,11 +20,12 @@ function toggleDarkMode() {
 
 <template>
 
-  <header class="bg-biscay-400 text-boulder-950 p-6 max-w shadow-xl flex items-center 
+  <header class="bg-biscay-400 text-hint-of-red-50 p-6 max-w flex items-center 
     dark:bg-boulder-900 dark:text-slate-100">
 
     <router-link :to="{ name: 'home' }">
-      <h1 class="font-semibold text-2xl shrink">Noteorious</h1>
+      <h1 class="font-semibold text-2xl shrink text-biscay-950
+      dark:text-inherit">Noteorious</h1>
     </router-link>
 
     <p class="text-xs scale-90 hover:text-slate-950">Deadly Note Revived</p>

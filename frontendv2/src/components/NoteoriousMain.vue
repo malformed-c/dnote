@@ -180,24 +180,30 @@ function copyHandler() {
     </span>
   </div>
 
-  <form name="note">
-    <div class="flex flex-col justify-center items-center shadow-2xl max-w-sm mx-auto rounded-xl bg-thunder-600">
+  <form name="noteForm">
+    <div class="bg-hint-of-red-50 text-hint-of-red-50 flex flex-col p-6 justify-center items-center shadow-2xl max-w-sm mx-auto rounded-xl
+    dark:bg-zinc-800 dark:text-slate-100 relative">
 
-      <label class="w-2/3 text-" for="note">{{ randomTitleMessage }}</label>
+      <div class="bg-biscay-400 top-0 left-0 p-2 w-full absolute rounded-t-lg flex flex-col items-center
+      dark:bg-boulder-900">
+        <label class="w-full font-semibold text-xl py-1" for="note">{{ randomTitleMessage }}</label>
+      </div>
 
-      <textarea name="note" v-model="message" rows=5 required placeholder="Type here"
-        class="bg-thunder mb-4 border-4 max-w-82 rounded-md shadow-lg resize-none focus:resize-y w-2/3 border-[#71c4ef] invalid:border-red-300 focus:invalid:border-red-500">
+      <span class="mt-12"></span>
+
+      <textarea id="note" name="note" v-model="message" rows=5 required placeholder="Type here" class="bg-hint-of-red-50 mb-4 border-4 border-hint-of-red-100 max-w-82 rounded-md resize-none focus:resize-y w-full
+        dark:bg-zinc-700 dark:border-zinc-700">
 
       </textarea>
 
       <Transition>
-        <button v-if="!completed" type="submit" @click="send()"
-          class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
+        <button v-if="!completed" type="submit" @click="send()" class="rounded-xl p-2 shadow-md bg-cornflower-blue-400 hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+          text-hint-of-red-50">
           Generate
         </button>
 
         <button v-else @click="copyHandler()"
-          class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
+          class="rounded-xl p-2 shadow-md bg-cornflower-blue-500 hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
           <span v-if="!copied">Copy</span>
           <span v-else>Copied</span>
         </button>
