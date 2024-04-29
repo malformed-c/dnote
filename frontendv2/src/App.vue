@@ -1,14 +1,13 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { RouterView } from 'vue-router'
 
 const isDark = ref(localStorage.getItem('darkMode') === 'true');
-document.documentElement.classList.toggle('dark', isDark.value);
 
-console.log('Dark setup ' + isDark.value)
-
-isDark.value = localStorage.getItem('darkMode')
-console.log('Dark ' + isDark.value)
+onBeforeMount(() => {
+  console.log('Before mount')
+  document.documentElement.classList.toggle('dark', isDark.value);
+})
 
 function toggleDarkMode() {
   isDark.value = !isDark.value;
@@ -21,12 +20,20 @@ function toggleDarkMode() {
 
 <template>
 
-  <header class="p-6 max-w shadow-xl flex items-center space-x-4 max-md:space-x-2 bg-thunder-950">
+  <header class="bg-biscay-400 text-boulder-950 p-6 max-w shadow-xl flex items-center 
+    dark:bg-boulder-900 dark:text-slate-100">
+
     <router-link :to="{ name: 'home' }">
-      <h1 class="font-semibold text-2xl text-[#71c4ef] hover:text-[#00668c]">Noteorious</h1>
+      <h1 class="font-semibold text-2xl shrink">Noteorious</h1>
     </router-link>
-    <p class="flex-1 text-slate-300 text-xs hover:text-slate-800">Deadly Note Revived</p>
-    <button class="dark:text-slate-100" @click="toggleDarkMode()">Dark Mode</button>
+
+    <p class="text-xs scale-90 hover:text-slate-950">Deadly Note Revived</p>
+    <span class="flex-1"></span>
+
+    <button class="font-semibold hover:scale-125 transition origin-center ease-in-out" @click="toggleDarkMode()">
+      Dark Mode
+    </button>
+
   </header>
 
   <RouterView />
