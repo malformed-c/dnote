@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useClipboard } from '@vueuse/core'
 
@@ -20,6 +20,21 @@ const completed = ref(false)
 
 const switchCase = defineModel('switchCase');
 switchCase.value = 'setup';
+
+
+const noteTitleMessages = ref([
+  'Your message',
+  'Type your note here',
+  'Enter your text',
+  'What would you like to say?',
+  'Share your thoughts',
+]);
+
+const randomTitleMessage = computed(() => {
+  const index = Math.floor(Math.random() * noteTitleMessages.value.length);
+  return noteTitleMessages.value[index];
+});
+
 
 console.log('setup');
 
@@ -158,12 +173,6 @@ function copyHandler() {
 </script>
 
 <template>
-  <header class="p-6 max-w shadow-md flex items-center space-x-6 bg-[#f5f4f1]">
-    <router-link to="/">
-      <h1 class="font-semibold text-2xl text-[#71c4ef] hover:text-[#00668c]">Noteorious</h1>
-    </router-link>
-    <p class="flex-1 text-slate-300 text-xs hover:text-slate-800">Deadly Note Revived</p>
-  </header>
 
   <div class="warning-container min-h-14 flex items-center justify-center">
     <span ref="warningElement" :style="warningStyle">
@@ -171,27 +180,31 @@ function copyHandler() {
     </span>
   </div>
 
-  <div class="flex flex-col justify-center items-center space-y-4">
-    <textarea v-model="message" rows=5 required placeholder="Type here"
-      class="bg-[#f5f4f1] border-4 max-w-82 rounded-md shadow-lg resize-none focus:resize-y w-2/3 border-[#71c4ef] invalid:border-red-300 focus:invalid:border-red-500">
+  <form name="note">
+    <div class="flex flex-col justify-center items-center shadow-2xl max-w-sm mx-auto rounded-xl bg-thunder-600">
 
-  </textarea>
+      <label class="w-2/3 text-" for="note">{{ randomTitleMessage }}</label>
 
-    <div class="flex space-x-32 flex-1">
+      <textarea name="note" v-model="message" rows=5 required placeholder="Type here"
+        class="bg-thunder mb-4 border-4 max-w-82 rounded-md shadow-lg resize-none focus:resize-y w-2/3 border-[#71c4ef] invalid:border-red-300 focus:invalid:border-red-500">
 
-      <button @click="send()"
-        class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
-        Generate
-      </button>
+      </textarea>
 
-      <button @click="copyHandler()"
-        class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
-        <span v-if="!copied">Copy</span>
-        <span v-else>Copied</span>
-      </button>
+      <Transition>
+        <button v-if="!completed" type="submit" @click="send()"
+          class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
+          Generate
+        </button>
+
+        <button v-else @click="copyHandler()"
+          class="rounded-xl p-2 shadow-md bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300">
+          <span v-if="!copied">Copy</span>
+          <span v-else>Copied</span>
+        </button>
+      </Transition>
 
     </div>
-  </div>
+  </form>
 
   <div class="hidden">
     Current path: {{ $route.path }}
