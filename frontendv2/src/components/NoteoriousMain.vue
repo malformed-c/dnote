@@ -172,7 +172,7 @@ function copyHandler() {
 
     setTimeout(() => {
       completed.value = false
-    }, 3000)
+    }, 1500)
 
   } else if (message.value && completed.value == false) {
     showWarning('Press Generate', 'Brown', false)
@@ -229,13 +229,15 @@ function toggleDarkMode() {
 
           <Transition :duration="0">
             <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
-          text-hint-of-red-50">
+          text-hint-of-red-50
+          dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 ">
               GENERATE
             </button>
 
-            <button v-else @click="copyHandler()"
-              class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
-              <span v-if="!copied">COPY AND ERASE</span>
+            <button v-else @click="copyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+              dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
+              :class="{ '!bg-green-400 dark:!bg-green-800': copied }">
+              <span v-if="!copied && completed">COPY AND ERASE</span>
               <span v-else>COPIED</span>
             </button>
           </Transition>
