@@ -51,7 +51,7 @@ http://localhost:4200/megURjYSfZRoip73AfoG7g#3aa96a0d6be4ded54e810d123cf71757
 
 ### Tech stack
 
- * **Frontend**: `Vue 3`
+ * **Frontend**: `JavaScript`, `Vue 3`
  * **Backend**: `Python 3`, `FastAPI`
  * **Database**: `Redis`
  
