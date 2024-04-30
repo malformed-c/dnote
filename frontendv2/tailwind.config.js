@@ -6,6 +6,9 @@ export default {
   theme: {
     extend: {
       colors: {
+        primary: '#1976d2',
+        secondary: '#b0bec5',
+        accent: '8c9eff',
         //accent
         'cornflower-blue': {
           50: '#f0f5fe',

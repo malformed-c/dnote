@@ -1,26 +1,10 @@
 <script setup>
-import { onBeforeMount, ref } from 'vue';
 import { RouterView } from 'vue-router'
-
-const isDark = ref(localStorage.getItem('darkMode') === 'true');
-
-onBeforeMount(() => {
-  console.log('Before mount')
-  document.documentElement.classList.toggle('dark', isDark.value);
-})
-
-function toggleDarkMode() {
-  isDark.value = !isDark.value;
-  document.documentElement.classList.toggle('dark', isDark.value);
-  localStorage.setItem('darkMode', isDark.value);
-  console.log('Set dark to ' + isDark.value)
-}
-
 </script>
 
 <template>
 
-  <header class="bg-biscay-400 text-hint-of-red-50 p-6 max-w flex items-center 
+  <header class="hidden bg-biscay-400 text-hint-of-red-50 p-6 max-w flex items-center 
     dark:bg-boulder-900 dark:text-slate-100">
 
     <router-link :to="{ name: 'home' }">

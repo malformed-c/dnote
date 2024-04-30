@@ -5,6 +5,9 @@ import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useClipboard } from '@vueuse/core'
 
+import BrightIcon from '@/components/icons/BrightIcon.vue'
+import DarkIcon from '@/components/icons/DarkIcon.vue'
+
 const { copy, copied } = useClipboard();
 
 const route = useRoute();
@@ -21,6 +24,7 @@ const completed = ref(false)
 const switchCase = defineModel('switchCase');
 switchCase.value = 'setup';
 
+const isDark = ref(localStorage.getItem('darkMode') === 'true');
 
 const noteTitleMessages = ref([
   'Your message',
@@ -170,52 +174,66 @@ function copyHandler() {
   }
 }
 
+function toggleDarkMode() {
+  isDark.value = !isDark.value;
+  document.documentElement.classList.toggle('dark', isDark.value);
+  localStorage.setItem('darkMode', isDark.value);
+  console.log('Set dark to ' + isDark.value)
+}
+
+
 </script>
 
 <template>
 
-  <div class="warning-container min-h-14 flex items-center justify-center">
+  <div class="flex h-screen justify-center items-center bg-hint-of-red-50
+  dark:bg-zinc-800">
+
+    <!-- <div class="warning-container min-h-14 flex items-center justify-center">
     <span ref="warningElement" :style="warningStyle">
       {{ warning }}
     </span>
-  </div>
+  </div> -->
 
-    <div class="bg-hint-of-red-50 text-hint-of-red-50 flex flex-col p-6 justify-center items-center shadow-2xl max-w-sm mx-auto rounded-xl
-    dark:bg-zinc-800 dark:text-slate-100 relative">
+    <div class="relative bg-hint-of-red-50 text-hint-of-red-50 flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl w-160 rounded-xl
+    dark:bg-zinc-800 dark:text-slate-100 ">
 
-      <div class="bg-biscay-400 top-0 left-0 p-2 w-full absolute rounded-t-lg flex flex-col items-center
+      <div class="bg-primary top-0 left-0 p-3 w-full absolute rounded-t-lg flex items-center shadow-lg
       dark:bg-boulder-900">
-        <label class="w-full font-semibold text-xl py-1" for="note">{{ randomTitleMessage }}</label>
+        <p class="w-full font-semibold text-xl py-1">Noteorious - Share notes securely</p>
+
+        <button @click="toggleDarkMode()">
+          <DarkIcon v-if="!isDark" />
+          <BrightIcon v-else />
+        </button>
+
       </div>
 
-      <span class="mt-12"></span>
+      <span class="mt-14"></span>
 
-      <textarea v-model="message" rows=5 required placeholder="Type here" class="text-black bg-hint-of-red-50 mb-4 border-4 border-hint-of-red-100 max-w-82 rounded-md resize-none focus:resize-y w-full
-        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-700">
+      <textarea v-model="message" rows=6 cols=50 required placeholder="Type here" class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary outline-none max-w-82 rounded-t-md resize-y w-full box-border p-3
+        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-500 dark:focus:border-primary">
 
       </textarea>
 
-      <Transition>
-        <button v-if="!completed" @click="send()" class="rounded-xl p-2 shadow-md bg-cornflower-blue-400 hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
-          text-hint-of-red-50">
-          Generate
-        </button>
 
-        <button v-else @click="copyHandler()"
-          class="rounded-xl p-2 shadow-md bg-cornflower-blue-500 hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
-          <span v-if="!copied">Copy</span>
-          <span v-else>Copied</span>
-        </button>
-      </Transition>
+      <div class="flex justify-end w-full">
+        <Transition>
+          <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+          text-hint-of-red-50">
+            GENERATE
+          </button>
+
+          <button v-else @click="copyHandler()"
+            class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
+            <span v-if="!copied">COPY</span>
+            <span v-else>COPIED</span>
+          </button>
+        </Transition>
+      </div>
 
     </div>
 
-  <div class="hidden">
-    Current path: {{ $route.path }}
-    Query: {{ $route.query }}
-    Params: {{ $route.params }}
-    Route: {{ $route.name }}
-    Case: {{ switchCase }}
   </div>
 
 </template>
