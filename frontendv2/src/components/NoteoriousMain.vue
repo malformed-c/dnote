@@ -22,25 +22,12 @@ const warningStyle = ref({});
 const warningElement = ref();
 
 const completed = ref(false)
+const clicked = ref(false)
 
 const switchCase = defineModel('switchCase');
 switchCase.value = 'setup';
 
 const isDark = ref(localStorage.getItem('darkMode') === 'true');
-
-const noteTitleMessages = ref([
-  'Your message',
-  'Type your note here',
-  'Enter your text',
-  'What would you like to say?',
-  'Share your thoughts',
-]);
-
-const randomTitleMessage = computed(() => {
-  const index = Math.floor(Math.random() * noteTitleMessages.value.length);
-  return noteTitleMessages.value[index];
-});
-
 
 console.log('setup');
 
@@ -110,6 +97,11 @@ function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true)
 
 function send() {
   // TODO add validation
+  clicked.value = true
+  setTimeout(() => {
+    clicked.value = false
+  }, 1500);
+
   if (message.value) {
     const { encrypted, secret } = encrypt(message.value)
 
@@ -230,7 +222,8 @@ function toggleDarkMode() {
           <Transition :duration="0">
             <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
           text-hint-of-red-50
-          dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 ">
+          dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
+              :class="{ '!bg-red-500 dark:!bg-red-800': !message && clicked, '!bg-cornflower-blue-900 dark:!bg-zinc-900': message && clicked }">
               GENERATE
             </button>
 
