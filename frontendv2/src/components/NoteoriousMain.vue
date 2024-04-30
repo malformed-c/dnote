@@ -186,7 +186,7 @@ function toggleDarkMode() {
 
 <template>
 
-  <div class="flex h-screen justify-center items-center bg-hint-of-red-50
+  <div class="flex h-screen justify-center items-center bg-hint-of-red-50 text-hint-of-red-50
   dark:bg-zinc-800">
 
     <!-- <div class="warning-container min-h-14 flex items-center justify-center">
@@ -195,44 +195,47 @@ function toggleDarkMode() {
     </span>
   </div> -->
 
-    <div class="relative bg-hint-of-red-50 text-hint-of-red-50 flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl w-160 rounded-xl
-    dark:bg-zinc-800 dark:text-slate-100 ">
+    <span class="flex flex-col">
 
-      <div class="bg-primary top-0 left-0 p-3 w-full absolute rounded-t-lg flex items-center shadow-lg
+      <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
-        <p class="w-full font-semibold text-xl py-1">Noteorious - Share notes securely</p>
+        <p class="font-semibold text-xl py-1">Noteorious - Share notes securely</p>
 
-        <button @click="toggleDarkMode()">
+        <button class="" @click="toggleDarkMode()">
           <DarkIcon v-if="!isDark" />
           <BrightIcon v-else />
         </button>
 
       </div>
 
-      <span class="mt-14"></span>
 
-      <textarea v-model="message" rows=6 cols=50 required placeholder="Type here" class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary outline-none max-w-82 rounded-t-md resize-y w-full box-border p-3
+      <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl rounded-t-none rounded-xl
+    dark:bg-zinc-800 dark:text-slate-100">
+
+        <textarea v-model="message" rows=6 cols=70 required placeholder="Type here" class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary max-w-full outline-none rounded-t-md resize-y box-border p-3
         dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-500 dark:focus:border-primary">
 
       </textarea>
 
 
-      <div class="flex justify-end w-full">
-        <Transition>
-          <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+        <div class="flex justify-end w-full">
+          <Transition>
+            <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
           text-hint-of-red-50">
-            GENERATE
-          </button>
+              GENERATE
+            </button>
 
-          <button v-else @click="copyHandler()"
-            class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
-            <span v-if="!copied">COPY</span>
-            <span v-else>COPIED</span>
-          </button>
-        </Transition>
+            <button v-else @click="copyHandler()"
+              class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
+              <span v-if="!copied">COPY</span>
+              <span v-else>COPIED</span>
+            </button>
+          </Transition>
+        </div>
+
       </div>
 
-    </div>
+    </span>
 
   </div>
 
