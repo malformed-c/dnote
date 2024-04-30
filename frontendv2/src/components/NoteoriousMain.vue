@@ -3,12 +3,14 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useClipboard } from '@vueuse/core'
+import { useClipboard, usePermission } from '@vueuse/core'
 
 import BrightIcon from '@/components/icons/BrightIcon.vue'
 import DarkIcon from '@/components/icons/DarkIcon.vue'
 
-const { copy, copied } = useClipboard();
+const { text, copy, copied, isSupported } = useClipboard();
+const permissionRead = usePermission('clipboard-read')
+const permissionWrite = usePermission('clipboard-write')
 
 const route = useRoute();
 const router = useRouter();
@@ -103,8 +105,7 @@ function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true)
     }
 
     warning.value = '';
-  },
-    3000)
+  }, 3000)
 }
 
 function send() {
@@ -163,10 +164,16 @@ function decrypt(data, secret) {
 }
 
 function copyHandler() {
+  console.log('Copy Handler')
   if (message.value && completed.value == true) {
     copy(message.value);
     showWarning('Now go!', 'LightGreen', false)
-    completed.value = false
+    message.value = ''
+
+    setTimeout(() => {
+      completed.value = false
+    }, 3000)
+
   } else if (message.value && completed.value == false) {
     showWarning('Press Generate', 'Brown', false)
   } else {
@@ -219,7 +226,8 @@ function toggleDarkMode() {
 
 
         <div class="flex justify-end w-full">
-          <Transition>
+
+          <Transition :duration="0">
             <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
           text-hint-of-red-50">
               GENERATE
@@ -227,10 +235,11 @@ function toggleDarkMode() {
 
             <button v-else @click="copyHandler()"
               class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300">
-              <span v-if="!copied">COPY</span>
+              <span v-if="!copied">COPY AND ERASE</span>
               <span v-else>COPIED</span>
             </button>
           </Transition>
+
         </div>
 
       </div>
