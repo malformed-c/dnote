@@ -1,11 +1,16 @@
 <script setup>
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useClipboard } from '@vueuse/core'
+import { useClipboard, usePermission } from '@vueuse/core'
 
-const { copy, copied } = useClipboard();
+import BrightIcon from '@/components/icons/BrightIcon.vue'
+import DarkIcon from '@/components/icons/DarkIcon.vue'
+
+const { text, copy, copied, isSupported } = useClipboard();
+const permissionRead = usePermission('clipboard-read')
+const permissionWrite = usePermission('clipboard-write')
 
 const route = useRoute();
 const router = useRouter();
@@ -17,19 +22,20 @@ const warningStyle = ref({});
 const warningElement = ref();
 
 const completed = ref(false)
+const clicked = ref(false)
 
 const switchCase = defineModel('switchCase');
 switchCase.value = 'setup';
 
+const isDark = ref(localStorage.getItem('darkMode') === 'true');
+
 console.log('setup');
 
-onMounted(() =>
-{
+onMounted(() => {
   console.log('mounted');
   console.log(route.path, route.name);
 
-  if (route.name === 'home')
-  {
+  if (route.name === 'home') {
     console.log('home branch')
     switchCase.value = 'home';
 
@@ -53,26 +59,26 @@ onMounted(() =>
     console.log(`id ${id} secret ${secret}`)
 
     axios
-    .get(`api/${id}`)
-    .then((resp) => {
-      message.value = decrypt(resp.data, secret);
-      showWarning('Here is message, only for you', 'green', false)
-      router.push('/')
-    })
-    .catch((error) => {
-      console.error(error)
-      showWarning('Request failed');
-      router.push('/')
-    });
+      .get(`api/${id}`)
+      .then((resp) => {
+        message.value = decrypt(resp.data, secret);
+        showWarning('Here is message, only for you', 'green', false)
+        router.push('/')
+      })
+      .catch((error) => {
+        console.error(error)
+        showWarning('Request failed');
+        router.push('/')
+      });
   }
 })
 
 function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true) {
   warningStyle.value = {
-      color: color,
-      fontSize: 'large',
-      fontWeight: 'bold',
-    }
+    color: color,
+    fontSize: 'large',
+    fontWeight: 'bold',
+  }
 
   if (shake) {
     warningElement.value.classList.add('shake')
@@ -86,14 +92,18 @@ function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true)
     }
 
     warning.value = '';
-  },
-  3000)
+  }, 3000)
 }
 
 function send() {
   // TODO add validation
+  clicked.value = true
+  setTimeout(() => {
+    clicked.value = false
+  }, 1500);
+
   if (message.value) {
-    const {encrypted, secret} = encrypt(message.value)
+    const { encrypted, secret } = encrypt(message.value)
 
     const payload = {
       note: encrypted,
@@ -102,15 +112,15 @@ function send() {
     // TODO add progress
 
     axios
-    .post('/api', payload)
-    .then((resp) => {
-      message.value = `${window.location.href}${resp.data.id}#${secret}`
-      showWarning('Completed', 'green', false)
-      completed.value = true
-    })
-    .catch((err) => {
-      showWarning(err)
-    })
+      .post('/api', payload)
+      .then((resp) => {
+        message.value = `${window.location.href}${resp.data.id}#${secret}`
+        showWarning('Completed', 'green', false)
+        completed.value = true
+      })
+      .catch((err) => {
+        showWarning(err)
+      })
 
   } else {
     showWarning();
@@ -126,7 +136,7 @@ function encrypt(data) {
   const secret = MD5(
     Base64.stringify(
       WordArray.random(32)))
-  .toString();
+    .toString();
 
   const encrypted = AES.encrypt(data, secret).toString();
 
@@ -145,88 +155,123 @@ function decrypt(data, secret) {
   return decrypted;
 }
 
-function copyHandler() {  
+function copyHandler() {
+  console.log('Copy Handler')
   if (message.value && completed.value == true) {
     copy(message.value);
     showWarning('Now go!', 'LightGreen', false)
-    completed.value = false
+    message.value = ''
+
+    setTimeout(() => {
+      completed.value = false
+    }, 1500)
+
   } else if (message.value && completed.value == false) {
-    showWarning('Press Generate', 'Yellow', false)
+    showWarning('Press Generate', 'Brown', false)
   } else {
     showWarning();
   }
 }
 
+function toggleDarkMode() {
+  isDark.value = !isDark.value;
+  document.documentElement.classList.toggle('dark', isDark.value);
+  localStorage.setItem('darkMode', isDark.value);
+  console.log('Set dark to ' + isDark.value)
+}
+
+
 </script>
 
 <template>
-  <header class="header">
-    <router-link to="/">
-      <h1 class="title">Noteorious</h1>
-    </router-link>
-  </header>
 
-  <div class="warning-container">
+  <div class="flex h-screen justify-center items-center bg-hint-of-red-50 text-hint-of-red-50
+  dark:bg-zinc-800">
+
+    <!-- <div class="warning-container min-h-14 flex items-center justify-center">
     <span ref="warningElement" :style="warningStyle">
       {{ warning }}
     </span>
-  </div>
+  </div> -->
 
-  <div class="main">
-    <textarea
-    v-model="message"
-    rows="5"
-    id="messageContent"
-    required
-    placeholder="Type here"
-    >
+    <span class="flex flex-col">
 
-  </textarea>
-    <div class="buttons">
+      <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
+      dark:bg-boulder-900">
+        <p class="font-semibold text-xl py-1">Noteorious - Share notes securely</p>
 
-      <button @click="send()"
-      :style="{ empty: !message }">
-        Generate
-      </button>
+        <button class="" @click="toggleDarkMode()">
+          <DarkIcon v-if="!isDark" />
+          <BrightIcon v-else />
+        </button>
 
-      <button @click="copyHandler()"
-      :class="{ copied: copied }">
-        <span v-if="!copied">Copy</span>
-        <span v-else>Copied</span>
-      </button>
+      </div>
 
-    </div>
-  </div>
 
-  <div class="debug">
-    Current path: {{ $route.path }}
-    Query: {{ $route.query }}
-    Params: {{ $route.params }}
-    Route: {{ $route.name }}
-    Case: {{ switchCase }}
+      <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl rounded-t-none rounded-xl
+    dark:bg-zinc-800 dark:text-slate-100">
+
+        <textarea v-model="message" rows=6 cols=70 required placeholder="Type here" class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary max-w-full outline-none rounded-t-md resize-y box-border p-3
+        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-500 dark:focus:border-primary">
+
+      </textarea>
+
+
+        <div class="flex justify-end w-full">
+
+          <Transition :duration="0">
+            <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+          text-hint-of-red-50
+          dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
+              :class="{ '!bg-red-500 dark:!bg-red-800': !message && clicked, '!bg-cornflower-blue-900 dark:!bg-zinc-900': message && clicked }">
+              GENERATE
+            </button>
+
+            <button v-else @click="copyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+              dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
+              :class="{ '!bg-green-400 dark:!bg-green-800': copied }">
+              <span v-if="!copied && completed">COPY AND ERASE</span>
+              <span v-else>COPIED</span>
+            </button>
+          </Transition>
+
+        </div>
+
+      </div>
+
+    </span>
+
   </div>
 
 </template>
 
 <style scoped>
-
 @keyframes shake {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateX(0);
   }
 
-  10%, 30%, 50%, 70%, 90% {
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
     transform: translateX(-10px);
   }
 
-  20%, 40%, 60%, 80% {
+  20%,
+  40%,
+  60%,
+  80% {
     transform: translateX(10px);
   }
 }
 
 .shake {
- animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
- transform: translate3d(0, 0, 0);
+  animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+  transform: translate3d(0, 0, 0);
 }
 
 .header {
@@ -237,45 +282,6 @@ function copyHandler() {
   padding: 5px;
   color: lightblue;
   z-index: 10;
-}
-
-.title {
-  color: deepskyblue;
-}
-
-.warning-container {
-  display: flex;
-  min-height: 60px;
-  justify-content: center;
-  align-items: center;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-}
-
-.main textarea {
-  min-width: 50vw;
-  width: 80%;
-  height: fit-content;
-  padding: 10px;
-  border: 3px solid blue;
-  border-radius: 5px;
-}
-
-.buttons {
-  display: flex;
-  gap: 10vh;
-  height: 35px;
-  width: auto;
-}
-
-.buttons button {
-  background-color: yellow;
 }
 
 .empty {
@@ -289,5 +295,4 @@ function copyHandler() {
 .debug {
   display: none;
 }
-
 </style>
