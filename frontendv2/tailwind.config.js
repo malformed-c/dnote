@@ -75,6 +75,12 @@ export default {
           900: '#283365',
           950: '#21274a'
         }
+      },
+      keyframes: {
+        wiggle: {
+          '0%, 100%': { transform: 'rotate(-3deg)' },
+          '50%': { transform: 'rotate(3deg)' },
+        }
       }
     },
     plugins: []

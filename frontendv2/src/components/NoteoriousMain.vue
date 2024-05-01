@@ -1,35 +1,34 @@
 <script setup>
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useClipboard, usePermission } from '@vueuse/core'
+import { useClipboard } from '@vueuse/core'
 
 import BrightIcon from '@/components/icons/BrightIcon.vue'
 import DarkIcon from '@/components/icons/DarkIcon.vue'
 
-const { text, copy, copied, isSupported } = useClipboard();
-const permissionRead = usePermission('clipboard-read')
-const permissionWrite = usePermission('clipboard-write')
+const { copy, copied } = useClipboard();
+const { copy: copyKey, copied: copiedKey } = useClipboard();
+
 
 const route = useRoute();
 const router = useRouter();
 
 const message = defineModel('message');
 
-const warning = ref('');
-const warningStyle = ref({});
-const warningElement = ref();
+const infoMessage = ref('')
+
+const keyIsMissing = ref(false)
 
 const completed = ref(false)
 const clicked = ref(false)
 
-const switchCase = defineModel('switchCase');
-switchCase.value = 'setup';
-
 const isDark = ref(localStorage.getItem('darkMode') === 'true');
 
-console.log('setup');
+const md5Regex = /^[a-f0-9]{32}$/;
+
+let id = route.params.id
 
 onMounted(() => {
   console.log('mounted');
@@ -37,60 +36,63 @@ onMounted(() => {
 
   if (route.name === 'home') {
     console.log('home branch')
-    switchCase.value = 'home';
 
   } else if (route.name === 'reader') {
     console.log('reader branch')
-    const id = route.params.id
+    id = route.params.id
     const secret = route.hash.replace('#', '')
 
-    const md5Regex = /^[a-f0-9]{32}$/;
-
-    if (!secret) {
-      showWarning('Where is the key?')
-      router.push('/')
-      return
-    } else if (!md5Regex.test(secret)) {
-      showWarning('Invalid key format. Please ensure it is a valid MD5 hash.');
-      router.push('/')
-      return
-    }
 
     router.push('/')
 
-    axios
-      .get(`api/${id}`)
-      .then((resp) => {
-        message.value = decrypt(resp.data, secret);
-        showWarning('Here is message, only for you', 'green', false)
-      })
-      .catch((error) => {
-        console.error(error)
-        showWarning('Request failed');
-      });
+    if (!secret) {
+      showInfo('Where is the key?')
+      keyIsMissing.value = true
+      return
+
+    } else if (!md5Regex.test(secret)) {
+      showInfo('Invalid key format. Please ensure it is a valid MD5 hash.');
+      return
+    }
+
+    getNote(id, secret)
+
   }
 })
 
-function showWarning(text = 'Text is empty', color = 'LightCoral', shake = true) {
-  warningStyle.value = {
-    color: color,
-    fontSize: 'large',
-    fontWeight: 'bold',
-  }
+function getNote(id, secret) {
+  axios
+  .get(`api/${id}`)
+  .then((resp) => {
+    message.value = decrypt(resp.data, secret);
+    showInfo('Here is message, only for you')
+  })
+  .catch((error) => {
+    console.error(error)
+    showInfo('Request failed');
+  })
 
-  if (shake) {
-    warningElement.value.classList.add('shake')
-  }
+}
 
-  warning.value = text;
-
-  setTimeout(() => {
-    if (shake) {
-      warningElement.value.classList.remove('shake')
+function submitKey(secret) {
+  if (!md5Regex.test(secret)) {
+      showInfo('Invalid key format. Please ensure it is a valid MD5 hash.');
+      return
     }
 
-    warning.value = '';
+    getNote(id, secret)
+
+    keyIsMissing.value = false
+
+}
+
+function showInfo(text = 'Text is empty') {
+  infoMessage.value = text;
+
+  setTimeout(() => {
+    infoMessage.value = '';
   }, 3000)
+
 }
 
 function send() {
@@ -113,15 +115,15 @@ function send() {
       .post('/api', payload)
       .then((resp) => {
         message.value = `${window.location.href}${resp.data.id}#${secret}`
-        showWarning('Completed', 'green', false)
+        showInfo('Completed')
         completed.value = true
       })
       .catch((err) => {
-        showWarning(err)
+        showInfo(err)
       })
 
   } else {
-    showWarning();
+    showInfo();
   }
 }
 
@@ -153,22 +155,29 @@ function decrypt(data, secret) {
   return decrypted;
 }
 
-function copyHandler() {
+function copyHandler(withKey) {
+
+  const toCopy = withKey ? message.value : message.value.split('#')[0]
+
   console.log('Copy Handler')
-  if (message.value && completed.value == true) {
-    copy(message.value);
-    showWarning('Now go!', 'LightGreen', false)
+  if (toCopy && completed.value == true) {
+    copy(toCopy);
+    showInfo('Now go!')
     message.value = ''
 
     setTimeout(() => {
       completed.value = false
     }, 1500)
 
-  } else if (message.value && completed.value == false) {
-    showWarning('Press Generate', 'Brown', false)
+  } else if (toCopy && completed.value == false) {
+    showInfo('Press Generate')
   } else {
-    showWarning();
+    showInfo()
   }
+}
+
+function copyKeyHandler() {
+  copyKey(message.value.split('#')[1].replace('#', ''))
 }
 
 function toggleDarkMode() {
@@ -215,22 +224,49 @@ function toggleDarkMode() {
       </textarea>
 
 
-        <div class="flex justify-end w-full">
+        <div class="flex justify-between items-center w-full">
+
+          <div class="font-semibold text-zinc-900
+          dark:text-hint-of-red-50"> {{ infoMessage }} </div>
 
           <Transition :duration="0">
-            <button v-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+
+            <button v-if="keyIsMissing" @click="submitKey(message)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+              dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">Submit Key</button>
+
+            <button v-else-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
           text-hint-of-red-50
           dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
               :class="{ '!bg-red-500 dark:!bg-red-800': !message && clicked, '!bg-cornflower-blue-900 dark:!bg-zinc-900': message && clicked }">
               GENERATE
             </button>
 
-            <button v-else @click="copyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
-              dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
-              :class="{ '!bg-green-400 dark:!bg-green-800': copied }">
-              <span v-if="!copied && completed">COPY AND ERASE</span>
-              <span v-else>COPIED</span>
+            <div v-else-if="!copied && completed" class="space-x-2">
+
+              <button @click="copyKeyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+                dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
+                :class="{'!bg-green-600 dark:!bg-green-700': copiedKey}">
+                <span v-if="!copiedKey">COPY key</span>
+                <span v-else>COPIED</span>
+              </button>
+  
+              <button @click="copyHandler(false)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+                dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">
+                COPY w/o key
+              </button>
+
+              <button @click="copyHandler(true)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+                dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">
+                COPY AND ERASE
+              </button>
+
+            </div>
+
+            <button v-else class="rounded-lg p-2 shadow-md bg-green-600 hover:bg-green-500 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+                dark:bg-green-700">
+                COPIED
             </button>
+
           </Transition>
 
         </div>
