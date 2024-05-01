@@ -56,19 +56,17 @@ onMounted(() => {
       return
     }
 
-    console.log(`id ${id} secret ${secret}`)
+    router.push('/')
 
     axios
       .get(`api/${id}`)
       .then((resp) => {
         message.value = decrypt(resp.data, secret);
         showWarning('Here is message, only for you', 'green', false)
-        router.push('/')
       })
       .catch((error) => {
         console.error(error)
         showWarning('Request failed');
-        router.push('/')
       });
   }
 })
