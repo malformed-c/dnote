@@ -20,6 +20,7 @@ const message = defineModel('message');
 const infoMessage = ref('')
 
 const keyIsMissing = ref(false)
+const copiedKeyWrap = ref(false)
 
 const completed = ref(false)
 const clicked = ref(false)
@@ -164,6 +165,7 @@ function copyHandler(withKey) {
     copy(toCopy);
     showInfo('Now go!')
     message.value = ''
+    copiedKeyWrap.value = false
 
     setTimeout(() => {
       completed.value = false
@@ -178,6 +180,7 @@ function copyHandler(withKey) {
 
 function copyKeyHandler() {
   copyKey(message.value.split('#')[1].replace('#', ''))
+  copiedKeyWrap.value = true
 }
 
 function toggleDarkMode() {
@@ -243,14 +246,14 @@ function toggleDarkMode() {
 
             <div v-else-if="!copied && completed" class="space-x-2">
 
-              <button @click="copyKeyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+              <button v-if="!copiedKeyWrap" @click="copyKeyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
                 dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
                 :class="{'!bg-green-600 dark:!bg-green-700': copiedKey}">
                 <span v-if="!copiedKey">COPY key</span>
                 <span v-else>COPIED</span>
               </button>
   
-              <button @click="copyHandler(false)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+              <button v-else @click="copyHandler(false)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
                 dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">
                 COPY w/o key
               </button>
