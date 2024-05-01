@@ -192,7 +192,7 @@ function toggleDarkMode() {
     </span>
   </div> -->
 
-    <span class="flex flex-col">
+    <span class="flex flex-col max-sm:scale-90 md:max-md:scale-95">
 
       <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
