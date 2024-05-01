@@ -232,7 +232,7 @@ function toggleDarkMode() {
           <Transition :duration="0">
 
             <button v-if="keyIsMissing" @click="submitKey(message)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
-              dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">Submit Key</button>
+              dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">SUBMIT</button>
 
             <button v-else-if="!completed" @click="send()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
           text-hint-of-red-50
