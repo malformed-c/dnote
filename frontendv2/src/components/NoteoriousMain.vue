@@ -70,7 +70,7 @@ function getNote(id, secret) {
   })
   .catch((error) => {
     console.error(error)
-    showInfo('Request failed');
+    showInfo('Message deleted');
   })
 
 }
@@ -158,7 +158,10 @@ function decrypt(data, secret) {
 
 function copyHandler(withKey) {
 
-  const toCopy = withKey ? message.value : message.value.split('#')[0]
+  const secret = message.value.split('#')[1].replace('#', '')
+  const URL = message.value.split('#')[0]
+
+  const toCopy = `Secret: ${secret}\nURL: ${URL}\n\nURL with secret: ${URL}#${secret}`
 
   console.log('Copy Handler')
   if (toCopy && completed.value == true) {
@@ -246,7 +249,7 @@ function toggleDarkMode() {
 
             <div v-else-if="!copied && completed" class="space-x-2">
 
-              <button v-if="!copiedKeyWrap" @click="copyKeyHandler()" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
+              <button v-if="!copiedKeyWrap" @click="copyKeyHandler()" class="hidden rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
                 dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900"
                 :class="{'!bg-green-600 dark:!bg-green-700': copiedKey}">
                 <span v-if="!copiedKey">COPY key</span>
