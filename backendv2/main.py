@@ -10,6 +10,7 @@ import redis.asyncio as redis
 
 class Noteorious(BaseModel):
     note: str
+    hash: str
 
 logger = logging.getLogger('Noteorious')
 logger.setLevel(logging.DEBUG)
@@ -49,14 +50,14 @@ async def serve_id(id: str):
     logger.info(f"Get {id}")
 
     try:
-        resp = await redis_client.getdel(id)        
-        if resp is None:
+        note = await redis_client.getdel(f"{id}:note")
+        hash = await redis_client.getdel(f"{id}:hash")
+        
+        if note is None or hash is None:
             logger.critical("Something is very strange")
             raise HTTPException(status_code=404)
-        
-        logger.info(f"Redis getdel success {resp}")
-        
-        return resp
+                
+        return {'note': note, 'hash': hash}
     except redis.RedisError as e:
         raise HTTPException(status_code=500)
     except:
@@ -65,15 +66,17 @@ async def serve_id(id: str):
 @app.post("/api")
 async def save_note(body: Noteorious):
     encrypted = body.note
-    logger.info(f"Received: {encrypted}")
+    hash = body.hash
 
     id = secrets.token_urlsafe(16)
 
     try:
-        await redis_client.set(id, encrypted)
+        await redis_client.set(f"{id}:note", encrypted)
+        await redis_client.set(f"{id}:hash", hash)
+
         logger.info(f"Stored succesfully: {id}")
     except redis.RedisError as e:
-        logger.error("Redis isn't responding")
+        logger.error(f"Redis isn't responding {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
     return {'id': id}
