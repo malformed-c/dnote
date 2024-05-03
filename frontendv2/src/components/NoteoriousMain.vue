@@ -72,6 +72,11 @@ function getNote(id, secret) {
   .get(`api/${id}`)
   .then((resp) => {
     message.value = decrypt(resp.data, secret);
+
+    nextTick(() => {
+      autoHeight()
+    })
+
     showInfo('Here is message, only for you')
   })
   .catch((error) => {
