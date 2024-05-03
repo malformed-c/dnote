@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useClipboard } from '@vueuse/core'
 
@@ -16,6 +16,11 @@ const route = useRoute();
 const router = useRouter();
 
 const message = defineModel('message');
+const messageElement = ref({})
+
+const placeholder = ref('Type Here')
+
+const disableArea = ref(false)
 
 const infoMessage = ref('')
 
@@ -47,8 +52,9 @@ onMounted(() => {
     router.push('/')
 
     if (!secret) {
-      showInfo('Where is the key?')
+      showInfo('Where is the secret?')
       keyIsMissing.value = true
+      placeholder.value = 'Paste Secret Here And Press Submit'
       return
 
     } else if (!md5Regex.test(secret)) {
@@ -84,6 +90,7 @@ function submitKey(secret) {
     getNote(id, secret)
 
     keyIsMissing.value = false
+    placeholder.value = 'Type Here'
 
 }
 
@@ -115,9 +122,14 @@ function send() {
     axios
       .post('/api', payload)
       .then((resp) => {
-        message.value = `${window.location.href}${resp.data.id}#${secret}`
+        const URL = `${window.location.href}${resp.data.id}`
+        message.value = `URI without secret: ${URL}\nSecret: ${secret}\n\n\nURL with secret: ${URL}#${secret}`
+        nextTick(() => {
+          autoHeight()
+        })
         showInfo('Completed')
         completed.value = true
+        disableArea.value = true
       })
       .catch((err) => {
         showInfo(err)
@@ -157,11 +169,7 @@ function decrypt(data, secret) {
 }
 
 function copyHandler(withKey) {
-
-  const secret = message.value.split('#')[1].replace('#', '')
-  const URL = message.value.split('#')[0]
-
-  const toCopy = `Secret: ${secret}\nURL: ${URL}\n\nURL with secret: ${URL}#${secret}`
+  const toCopy = message.value
 
   console.log('Copy Handler')
   if (toCopy && completed.value == true) {
@@ -169,6 +177,7 @@ function copyHandler(withKey) {
     showInfo('Now go!')
     message.value = ''
     copiedKeyWrap.value = false
+    disableArea.value = false
 
     setTimeout(() => {
       completed.value = false
@@ -187,12 +196,17 @@ function copyKeyHandler() {
 }
 
 function toggleDarkMode() {
-  isDark.value = !isDark.value;
-  document.documentElement.classList.toggle('dark', isDark.value);
-  localStorage.setItem('darkMode', isDark.value);
+  isDark.value = !isDark.value
+  document.documentElement.classList.toggle('dark', isDark.value)
+  localStorage.setItem('darkMode', isDark.value)
   console.log('Set dark to ' + isDark.value)
 }
 
+function autoHeight() {
+  const element = messageElement.value
+  element.style.height = 'auto'
+  element.style.height = element.scrollHeight + 'px'
+}
 
 </script>
 
@@ -224,10 +238,12 @@ function toggleDarkMode() {
       <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl rounded-t-none rounded-xl
     dark:bg-zinc-800 dark:text-slate-100">
 
-        <textarea v-model="message" rows=6 cols=70 required placeholder="Type here" class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary max-w-full outline-none rounded-t-md resize-y box-border p-3
-        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-500 dark:focus:border-primary">
+        <textarea ref="messageElement" v-model="message" rows="6" cols=70 required :placeholder=placeholder class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary max-w-full box-border outline-none rounded-t-md resize-y  p-3
+        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-500 dark:focus:border-primary min-h-min max-h-max overflow-y-hidden"
+        :readonly="disableArea"
+        @input="autoHeight($event)">
 
-      </textarea>
+        </textarea>
 
 
         <div class="flex justify-between items-center w-full">
