@@ -16,7 +16,17 @@ Deadly Note is a simple Javascript and Python application that allows users to s
 
 #### DEV
 
-> WIP
+For Frontend:
+```bash
+# Start backend
+pushd backendv2
+docker compose up -d
+popd
+
+# Start Vite Development server
+cd frontendv2
+bun dev
+```
 
 #### PRODUCTION
 
