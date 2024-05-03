@@ -71,22 +71,27 @@ function getNote(id, secret) {
   axios
   .get(`api/${id}`)
   .then((resp) => {
-    message.value = decrypt(resp.data, secret);
+    console.log(resp)
 
+    message.value = decrypt(resp.data.note, secret, resp.data.hash);
+    
     nextTick(() => {
       autoHeight()
     })
-
+    
     showInfo('Here is message, only for you')
   })
   .catch((error) => {
     console.error(error)
-    showInfo('Message deleted');
+    showInfo(error);
+    message.value = ''
   })
 
 }
 
 function submitKey(secret) {
+  secret = secret.trim()
+  
   if (!md5Regex.test(secret)) {
       showInfo('Invalid key format. Please ensure it is a valid MD5 hash.');
       return
@@ -116,10 +121,13 @@ function send() {
   }, 1500);
 
   if (message.value) {
-    const { encrypted, secret } = encrypt(message.value)
+    const { encrypted, secret, hash } = encrypt(message.value)
+
+    console.log('enc ' + encrypted + ' sec ' + secret + ' hash ' + hash)
 
     const payload = {
       note: encrypted,
+      hash: hash
     };
 
     // TODO add progress
@@ -147,29 +155,39 @@ function send() {
 
 function encrypt(data) {
   const MD5 = CryptoJS.MD5;
-  const Base64 = CryptoJS.enc.Base64;
-  const WordArray = CryptoJS.lib.WordArray;
-  const AES = CryptoJS.AES;
+  const SHA256 = CryptoJS.SHA256
+  const Base64 = CryptoJS.enc.Base64
+  const WordArray = CryptoJS.lib.WordArray
+  const AES = CryptoJS.AES
+
+  const hash = SHA256(data).toString()
 
   const secret = MD5(
     Base64.stringify(
       WordArray.random(32)))
-    .toString();
+    .toString()
 
-  const encrypted = AES.encrypt(data, secret).toString();
+  const encrypted = AES.encrypt(data, secret).toString()
 
   return {
     encrypted: encrypted,
-    secret: secret
-  };
+    secret: secret,
+    hash: hash
+  }
 }
 
-function decrypt(data, secret) {
+function decrypt(data, secret, hash) {
   const AES = CryptoJS.AES;
   const Utf8 = CryptoJS.enc.Utf8;
+  const SHA256 = CryptoJS.SHA256
 
   const decrypted = AES.decrypt(data, secret).toString(Utf8);
 
+  if (SHA256(decrypted).toString() !== hash)
+  {
+    throw "Hashes isn't Equal"
+  }
+    
   return decrypted;
 }
 
