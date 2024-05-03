@@ -24,7 +24,10 @@ docker compose up -d
 popd
 
 # Start Vite Development server
+# Assuming bun is installed
 cd frontendv2
+bun add vite
+bun install
 bun dev
 ```
 
