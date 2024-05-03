@@ -72,7 +72,9 @@ function getNote(id, secret) {
   .get(`api/${id}`)
   .then((resp) => {
     console.log(resp)
+
     message.value = decrypt(resp.data.note, secret, resp.data.hash);
+    
     nextTick(() => {
       autoHeight()
     })
@@ -82,11 +84,14 @@ function getNote(id, secret) {
   .catch((error) => {
     console.error(error)
     showInfo(error);
+    message.value = ''
   })
 
 }
 
 function submitKey(secret) {
+  secret = secret.trim()
+  
   if (!md5Regex.test(secret)) {
       showInfo('Invalid key format. Please ensure it is a valid MD5 hash.');
       return
