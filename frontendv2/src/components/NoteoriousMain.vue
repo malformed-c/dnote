@@ -221,7 +221,7 @@ function autoHeight() {
     </span>
   </div> -->
 
-    <span class="flex flex-col max-sm:scale-90 md:max-md:scale-95">
+    <span class="flex flex-col max-sm:scale-75 max-md:scale-95">
 
       <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
@@ -238,7 +238,7 @@ function autoHeight() {
       <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl rounded-t-none rounded-xl
     dark:bg-zinc-800 dark:text-slate-100 group">
 
-        <textarea ref="messageElement" v-model="message" rows="6" cols=80 required :placeholder=placeholder
+        <textarea ref="messageElement" v-model="message" rows=6 cols=80 required :placeholder=placeholder
           class="text-black bg-hint-of-red-100 mb-4 max-w-full box-border outline-none rounded-t-md resize-y  p-3
         dark:text-hint-of-red-50 dark:bg-zinc-700 min-h-min max-h-96" :readonly="disableArea" @input="autoHeight($event)">
 
