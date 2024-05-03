@@ -67,3 +67,6 @@ http://localhost:4200/megURjYSfZRoip73AfoG7g#3aa96a0d6be4ded54e810d123cf71757
  * **Frontend**: `JavaScript`, `Vue 3 + Tailwind CSS`
  * **Backend**: `Python 3`, `FastAPI`
  * **Database**: `Redis`
+
+#### Support
+You can support me with transfer to card Tinkoff: `2200700732424113`
