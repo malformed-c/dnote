@@ -236,14 +236,25 @@ function autoHeight() {
 
 
       <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl rounded-t-none rounded-xl
-    dark:bg-zinc-800 dark:text-slate-100">
+    dark:bg-zinc-800 dark:text-slate-100 group">
 
-        <textarea ref="messageElement" v-model="message" rows="6" cols=70 required :placeholder=placeholder class="text-black bg-hint-of-red-100 mb-4 border-b-2 focus:border-b-primary max-w-full box-border outline-none rounded-t-md resize-y  p-3
-        dark:text-hint-of-red-50 dark:bg-zinc-700 dark:border-zinc-500 dark:focus:border-primary min-h-min max-h-max overflow-y-hidden"
-        :readonly="disableArea"
-        @input="autoHeight($event)">
+        <textarea ref="messageElement" v-model="message" rows="6" cols=70 required :placeholder=placeholder
+          class="text-black bg-hint-of-red-100 mb-4 max-w-full box-border outline-none rounded-t-md resize-y  p-3
+        dark:text-hint-of-red-50 dark:bg-zinc-700   min-h-min max-h-max overflow-y-hidden" :readonly="disableArea" @input="autoHeight($event)">
 
         </textarea>
+
+        <span class="flex w-full flex-col">
+          <span class="flex -translate-y-4 flex-row items-center">
+            <span
+              class="h-0.5 w-0 origin-left rounded-l bg-primary transition-all duration-300 ease-linear group-focus-within:w-full group-focus-within:rounded group-focus-within:ease-out">&nbsp;</span>
+            <span
+              class="w-0 transition-all origin-left duration-500 group-focus-within:animate-triwidth h-0.5 bg-blue-300 group-focus-within:rounded-full group-focus-within:scale-150">&nbsp;</span>
+            <span
+              class="h-px w-full origin-right rounded-l rounded-r bg-black transition-all duration-300 ease-linear group-focus-within:w-0 group-focus-within:rounded-l-none
+              dark:bg-zinc-900">&nbsp;</span>
+          </span>
+        </span>
 
 
         <div class="flex justify-between items-center w-full">
@@ -271,7 +282,7 @@ function autoHeight() {
                 <span v-if="!copiedKey">COPY key</span>
                 <span v-else>COPIED</span>
               </button>
-  
+
               <button v-else @click="copyHandler(false)" class="rounded-lg p-2 shadow-md bg-primary hover:bg-cornflower-blue-600 active:bg-cornflower-blue-700 focus:outline-none focus:ring focus:ring-cornflower-blue-300
                 dark:bg-zinc-600 dark:hover:bg-zinc-700 dark:active:bg-zinc-900">
                 COPY w/o key
@@ -286,7 +297,7 @@ function autoHeight() {
 
             <button v-else class="rounded-lg p-2 shadow-md bg-green-600 hover:bg-green-500 focus:outline-none focus:ring focus:ring-cornflower-blue-300
                 dark:bg-green-700">
-                COPIED
+              COPIED
             </button>
 
           </Transition>

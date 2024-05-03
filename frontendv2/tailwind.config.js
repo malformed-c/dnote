@@ -77,10 +77,20 @@ export default {
         }
       },
       keyframes: {
-        wiggle: {
-          '0%, 100%': { transform: 'rotate(-3deg)' },
-          '50%': { transform: 'rotate(3deg)' },
+        triwidth: {
+          '0%': {
+            width: '0rem',
+          },
+          '50%': {
+            width: '4rem'
+          },
+          '100%': {
+            width: '0'
+          }
         }
+      },
+      animation: {
+        triwidth: 'triwidth 300ms ease-out'
       }
     },
     plugins: []
