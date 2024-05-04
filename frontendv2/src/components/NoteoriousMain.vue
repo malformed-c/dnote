@@ -332,7 +332,7 @@ function autoHeight() {
     </span>
 
     <a class="flex text-zinc-800/40 font-semibold self-end justify-self-end place-self-end w-0 text-nowrap hover:underline
-    dark:text-hint-of-red-400/50" href="https://github.com/malformed-c/dnote/">GitHub Repo</a>
+    dark:text-hint-of-red-400/50" href="https://github.com/malformed-c/dnote/">GitHub Repository</a>
 
   </div>
 
