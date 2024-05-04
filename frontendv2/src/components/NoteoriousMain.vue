@@ -235,7 +235,7 @@ function autoHeight() {
 
 <template>
 
-  <div class="flex h-screen justify-center items-center bg-hint-of-red-50 text-hint-of-red-50
+  <div class="flex h-dvh justify-center items-center bg-hint-of-red-50 text-hint-of-red-50
   dark:bg-zinc-800">
 
     <!-- <div class="warning-container min-h-14 flex items-center justify-center">
@@ -244,7 +244,7 @@ function autoHeight() {
     </span>
   </div> -->
 
-    <span class="flex flex-col max-sm:scale-75 max-md:scale-95">
+    <span class="flex flex-col items-stretch p-6 max-md:w-dvw">
 
       <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
@@ -258,7 +258,7 @@ function autoHeight() {
       </div>
 
 
-      <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center max-md:max-w-96 shadow-2xl rounded-t-none rounded-xl
+      <div class="bg-hint-of-red-50 text-hint-of-red-50 border-t-black flex flex-col p-4 justify-center items-center shadow-2xl rounded-t-none rounded-xl
     dark:bg-zinc-800 dark:text-slate-100 group">
 
         <textarea ref="messageElement" v-model="message" rows="6" cols="80" required :placeholder=placeholder
