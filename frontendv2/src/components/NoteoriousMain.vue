@@ -246,9 +246,9 @@ function autoHeight() {
 
     <span class="flex flex-col items-stretch p-8 justify-center max-md:w-dvw">
 
-      <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
+      <div class="flex space-x-2 bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
-        <p class="font-semibold text-xl py-1">Noteorious — Share notes securely</p>
+        <p class="font-semibold max-md:text-base text-xl py-1">Noteorious — Share notes securely</p>
 
         <button class="" @click="toggleDarkMode()">
           <DarkIcon v-if="!isDark" />
