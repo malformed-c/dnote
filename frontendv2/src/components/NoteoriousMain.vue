@@ -262,8 +262,8 @@ function autoHeight() {
     dark:bg-zinc-800 dark:text-slate-100 group">
 
         <textarea ref="messageElement" v-model="message" rows="6" cols="80" required :placeholder=placeholder
-          class="text-black bg-hint-of-red-100 mb-4 max-w-full box-border outline-none rounded-t-md resize-y  p-3
-        dark:text-hint-of-red-50 dark:bg-zinc-700 min-h-min max-h-96" :readonly="disableArea" @input="autoHeight($event)">
+          class="text-black bg-hint-of-red-100 mb-4 w-full box-border outline-none rounded-t-md resize-y p-3
+        dark:text-hint-of-red-50 dark:bg-zinc-700 min-h-min" :readonly="disableArea" @input="autoHeight($event)">
 
         </textarea>
 
@@ -330,6 +330,9 @@ function autoHeight() {
       </div>
 
     </span>
+
+    <a class="flex text-zinc-800/40 font-semibold self-end justify-self-end place-self-end w-0 text-nowrap hover:underline
+    dark:text-hint-of-red-400/50" href="https://github.com/malformed-c/dnote/">GitHub Repo <span class="text-[8px] self-start hover:no-underline">Support PLS</span></a>
 
   </div>
 
