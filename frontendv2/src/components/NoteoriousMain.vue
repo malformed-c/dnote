@@ -248,7 +248,7 @@ function autoHeight() {
 
       <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
-        <p class="font-semibold text-xl py-1">Noteorious - Share notes securely</p>
+        <p class="font-semibold text-xl py-1">Noteorious — Share notes securely</p>
 
         <button class="" @click="toggleDarkMode()">
           <DarkIcon v-if="!isDark" />
@@ -332,7 +332,7 @@ function autoHeight() {
     </span>
 
     <a class="absolute max-sm:text-sm transition-all bottom-2 text-zinc-800/35 hover:text-zinc-800 text-lg font-semibold text-nowrap hover:underline
-    dark:text-hint-of-red-400/40 dark:hover:text-hint-of-red-200" href="https://github.com/malformed-c/dnote/">Our project on — GitHub</a>
+    dark:text-hint-of-red-400/40 dark:hover:text-hint-of-red-200" href="https://github.com/malformed-c/dnote/">Our project on GitHub</a>
 
   </div>
 
