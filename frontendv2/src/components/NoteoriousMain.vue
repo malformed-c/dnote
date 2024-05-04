@@ -235,7 +235,7 @@ function autoHeight() {
 
 <template>
 
-  <div class="flex h-dvh justify-center items-center bg-hint-of-red-50 text-hint-of-red-50
+  <div class="flex h-dvh w-dvw justify-center overflow-hidden items-center bg-hint-of-red-50 text-hint-of-red-50
   dark:bg-zinc-800">
 
     <!-- <div class="warning-container min-h-14 flex items-center justify-center">
@@ -244,7 +244,7 @@ function autoHeight() {
     </span>
   </div> -->
 
-    <span class="flex flex-col items-stretch p-6 max-md:w-dvw">
+    <span class="flex flex-col items-stretch p-8 justify-center max-md:w-dvw">
 
       <div class="flex bg-primary p-3 rounded-t-lg items-center justify-between shadow-lg z-0
       dark:bg-boulder-900">
