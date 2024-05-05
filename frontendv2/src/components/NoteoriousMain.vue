@@ -83,7 +83,7 @@ function getNote(id, secret) {
   })
   .catch((error) => {
     console.error(error)
-    showInfo(error);
+    showInfo('Note was deleted');
     message.value = ''
   })
 
